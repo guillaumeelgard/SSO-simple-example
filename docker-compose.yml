@@ -9,7 +9,7 @@ services:
     volumes:
       - ./site:/var/www
     ports:
-      - 8100:80
+      - 8301:80
     environment:
       - APP=Site 1
   site2:
@@ -18,7 +18,7 @@ services:
     volumes:
       - ./site:/var/www
     ports:
-      - 8200:80
+      - 8302:80
     environment:
       - APP=Site 2
   auth:
