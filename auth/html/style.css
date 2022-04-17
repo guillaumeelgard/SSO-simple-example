@@ -1,0 +1,23 @@
+html {
+  min-height: 100vh;
+  background: var(--bg-color);
+}
+body {
+  background: var(--bg-color);
+}
+section .container {
+  background: #fff;
+}
+.well {
+  max-width: 700px;
+  padding: 1rem;
+  margin: 3rem auto;
+}
+table th,
+table td {
+  border: solid 1px #444;
+  padding: .2em .5em;
+}
+table + table {
+  margin-top: 1em;
+}

@@ -1,0 +1,7 @@
+{
+    "require": {
+        "rbdwllr/reallysimplejwt": "^4.0",
+        "firebase/php-jwt": "^5.5",
+        "marfrelen/lessphp": "^0.5.1"
+    }
+}
