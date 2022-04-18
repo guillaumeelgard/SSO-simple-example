@@ -37,7 +37,7 @@ $api = new class () {
         unset($_SESSION['jwt']);
         unset($_SESSION['user']);
 
-        $currentFullUrl = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $currentFullUrl = $_SERVER['REQUEST_SCHEME'] . '://' . ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST']) . $_SERVER['REQUEST_URI'];
         header('Location: ' . $this->externalUrl . '/?action=check&to=' . urlencode($currentFullUrl));
         exit;
     }

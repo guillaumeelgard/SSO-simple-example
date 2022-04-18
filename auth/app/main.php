@@ -15,7 +15,7 @@ if(!file_exists(APP_PATH . '/authAddress.txt'))
 }
 
 $websites = array_map(fn($a) => trim($a, '/'), json_decode(file_get_contents(APP_PATH . '/websites.json')));
-    $authAddress = trim(trim(file_get_contents(APP_PATH . '/authAddress.txt')), '/');
+$authAddress = trim(trim(file_get_contents(APP_PATH . '/authAddress.txt')), '/');
 
 if (isset($_GET['action'])) {
     $file = APP_PATH . '/actions/' . $_GET['action'] . '.php';

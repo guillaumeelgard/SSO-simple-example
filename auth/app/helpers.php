@@ -56,7 +56,7 @@ class Url
     public function __construct(?string $url = null)
     {
         if (is_null($url)) {
-            $url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            $url = $_SERVER['REQUEST_SCHEME'] . '://' . ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST']) . $_SERVER['REQUEST_URI'];
         }
 
         foreach (parse_url($url) as $k => $v) {

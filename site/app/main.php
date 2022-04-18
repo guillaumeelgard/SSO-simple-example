@@ -24,7 +24,7 @@ require_once APP_PATH . '/api.php';
 
 foreach($websites as $k => $website)
 {
-    if(trim($website, '/') == $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'])
+    if(trim($website, '/') == $_SERVER['REQUEST_SCHEME'] . '://' . ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST']))
     {
         $kSite = $k;
         break;
