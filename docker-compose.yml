@@ -10,8 +10,6 @@ services:
       - ./site:/var/www
     ports:
       - 8301:80
-    environment:
-      - APP=Site 1
   site2:
     container_name: site2
     image: custom
@@ -19,8 +17,6 @@ services:
       - ./site:/var/www
     ports:
       - 8302:80
-    environment:
-      - APP=Site 2
   auth:
     container_name: auth
     image: custom

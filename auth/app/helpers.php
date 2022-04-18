@@ -2,6 +2,11 @@
 
 use Firebase\JWT\JWT as FJWT;
 
+if(!file_exists(__DIR__ . '/database.sqlite'))
+{
+    copy(__DIR__ . '/database.sample.sqlite', __DIR__ . '/database.sqlite');
+}
+
 global $db;
 $db = new PDO('sqlite:' . __DIR__ . '/database.sqlite');
 

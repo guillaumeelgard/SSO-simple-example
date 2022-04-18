@@ -31,7 +31,7 @@
 
                 ?>
                 <li class="nav-item">
-                    <a class="nav-link active" href="http://localhost:8300/">Auth</a>
+                    <a class="nav-link active" href="<?=$authAddress?>">Auth</a>
                 </li>
             </ul>
         </div>

@@ -1,4 +1,7 @@
 /auth/app/vendor
+/auth/app/authAddress.txt
 /auth/app/websites.json
+/auth/app/database.sqlite
 /site/app/vendor
 /site/app/websites.json
+/site/app/authAddress.txt

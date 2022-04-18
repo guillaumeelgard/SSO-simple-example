@@ -11,7 +11,7 @@ document.querySelector('#login-form button[type=submit]').addEventListener('clic
 
             if(data.success)
             {
-                window.location = 'http://localhost:8300/?action=register&jwt=' + data.jwt + '&to=' + document.baseURI
+                window.location = '<?=$authAddress?>/?action=register&jwt=' + data.jwt + '&to=' + document.baseURI
             }
             else
             {

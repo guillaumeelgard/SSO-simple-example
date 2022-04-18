@@ -54,7 +54,7 @@
 
                 ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="http://localhost:8300/">Auth</a>
+                    <a class="nav-link" href="<?=$authAddress?>">Auth</a>
                 </li>
             </ul>
         </div>

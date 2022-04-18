@@ -9,7 +9,13 @@ if(!file_exists(APP_PATH . '/websites.json'))
     copy(APP_PATH . '/websites.sample.json', APP_PATH . '/websites.json');
 }
 
-$websites = json_decode(file_get_contents(APP_PATH . '/websites.json'));
+if(!file_exists(APP_PATH . '/authAddress.txt'))
+{
+    copy(APP_PATH . '/authAddress.sample.txt', APP_PATH . '/authAddress.txt');
+}
+
+$websites = array_map(fn($a) => trim($a, '/'), json_decode(file_get_contents(APP_PATH . '/websites.json')));
+$authAddress = trim(file_get_contents(APP_PATH . '/authAddress.txt'), '/');
 
 if (isset($_GET['action'])) {
     $file = APP_PATH . '/actions/' . $_GET['action'] . '.php';

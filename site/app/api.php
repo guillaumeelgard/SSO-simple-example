@@ -2,7 +2,12 @@
 
 $api = new class () {
     private string $internalUrl = 'http://host.docker.internal:8300';
-    private string $externalUrl = 'http://localhost:8300';
+    private string $externalUrl;
+
+    public function setExternalUrl(string $externalUrl): void
+    {
+        $this->externalUrl = $externalUrl;
+    }
 
     public function call(string $uri, ?array $post = null, bool $json_encode = true): stdClass
     {
@@ -24,7 +29,6 @@ $api = new class () {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $content = curl_exec($ch);
         curl_close($ch);
-
         return $json_encode ? json_decode($content) : $content;
     }
 
@@ -52,3 +56,5 @@ $api = new class () {
         ]);
     }
 };
+
+$api->setExternalUrl($authAddress);

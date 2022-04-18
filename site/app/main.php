@@ -6,14 +6,21 @@ define('APP_PATH', __DIR__);
 
 require_once APP_PATH . '/vendor/autoload.php';
 require_once APP_PATH . '/helpers.php';
-require_once APP_PATH . '/api.php';
 
 if(!file_exists(APP_PATH . '/websites.json'))
 {
     copy(APP_PATH . '/websites.sample.json', APP_PATH . '/websites.json');
 }
 
-$websites = json_decode(file_get_contents(APP_PATH . '/websites.json'));
+if(!file_exists(APP_PATH . '/authAddress.txt'))
+{
+    copy(APP_PATH . '/authAddress.sample.txt', APP_PATH . '/authAddress.txt');
+}
+
+$websites = array_map(fn($a) => trim($a, '/'), json_decode(file_get_contents(APP_PATH . '/websites.json')));
+$authAddress = trim(file_get_contents(APP_PATH . '/authAddress.txt'), '/');
+
+require_once APP_PATH . '/api.php';
 
 foreach($websites as $k => $website)
 {
@@ -47,7 +54,6 @@ if (isset($_GET['action'])) {
                 $_SESSION['user'] = $result->user;
                 $_SESSION['jwt'] = $_GET['jwt'];
                 $_SESSION['tokenId'] = $result->tokenId;
-
                 (new Url())->deleteQuery('jwt')->redirect();
             } else {
                 $api->getNewToken();
