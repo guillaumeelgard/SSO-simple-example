@@ -9,12 +9,16 @@ services:
       - ./site:/var/www
     ports:
       - 8301:80
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   site2:
     image: ssoapp
     volumes:
       - ./site:/var/www
     ports:
       - 8302:80
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   auth:
     image: ssoapp
     volumes:
