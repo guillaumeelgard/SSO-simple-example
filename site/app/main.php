@@ -18,7 +18,7 @@ if(!file_exists(APP_PATH . '/authAddress.txt'))
 }
 
 $websites = array_map(fn($a) => trim($a, '/'), json_decode(file_get_contents(APP_PATH . '/websites.json')));
-$authAddress = trim(file_get_contents(APP_PATH . '/authAddress.txt'), '/');
+$authAddress = trim(trim(file_get_contents(APP_PATH . '/authAddress.txt'), '/'));
 
 require_once APP_PATH . '/api.php';
 
