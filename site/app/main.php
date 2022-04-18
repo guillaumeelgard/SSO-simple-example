@@ -22,12 +22,9 @@ $authAddress = trim(trim(file_get_contents(APP_PATH . '/authAddress.txt'), '/'))
 
 require_once APP_PATH . '/api.php';
 
-p($websites);
-d($_SERVER);
-
 foreach($websites as $k => $website)
 {
-    if($website == $_SERVER['REQUEST_SCHEME'] . '://' . ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST']))
+    if(preg_replace('/^.+\//', '', $website) == ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST']))
     {
         $kSite = $k;
         break;
