@@ -1,25 +1,22 @@
 version: '3.9'
 services:
   site1:
-    container_name: site1
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: custom
+    image: ssoapp
     volumes:
       - ./site:/var/www
     ports:
       - 8301:80
   site2:
-    container_name: site2
-    image: custom
+    image: ssoapp
     volumes:
       - ./site:/var/www
     ports:
       - 8302:80
   auth:
-    container_name: auth
-    image: custom
+    image: ssoapp
     volumes:
       - ./auth:/var/www
     ports:
