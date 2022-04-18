@@ -9,18 +9,20 @@
 $data = json_decode(file_get_contents('php://input'));
 
 if (! isset($data->jwt)) {
-    exit(json_encode([
+    echo json_encode([
         'success' => false,
-    ]));
+    ]);
+    exit;
 }
 
 $jwt = new JWT($data->jwt);
 
 if (! $jwt->isValid()) {
-    exit(json_encode([
+    echo json_encode([
         'success' => false,
         'tokenId' => $jwt->getTokenId(),
-    ]));
+    ]);
+    exit;
 }
 
 $user = null;

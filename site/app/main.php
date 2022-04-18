@@ -41,19 +41,19 @@ if (isset($_GET['action'])) {
 } else {
     if (isset($_SESSION['jwt'])) {
         $result = $api->verifyToken($_SESSION['jwt']);
-        if ($result->success) {
-            $_SESSION['user'] = $result->user;
-            $_SESSION['tokenId'] = $result->tokenId;
+        if ($result['success']) {
+            $_SESSION['user'] = $result['user'];
+            $_SESSION['tokenId'] = $result['tokenId'];
         } else {
             $api->getNewToken();
         }
     } else {
         if (isset($_GET['jwt'])) {
             $result = $api->verifyToken($_GET['jwt']);
-            if ($result->success) {
-                $_SESSION['user'] = $result->user;
+            if ($result['success']) {
+                $_SESSION['user'] = $result['user'];
                 $_SESSION['jwt'] = $_GET['jwt'];
-                $_SESSION['tokenId'] = $result->tokenId;
+                $_SESSION['tokenId'] = $result['tokenId'];
                 (new Url())->deleteQuery('jwt')->redirect();
             } else {
                 $api->getNewToken();

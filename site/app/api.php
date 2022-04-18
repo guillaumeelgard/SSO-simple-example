@@ -9,7 +9,7 @@ $api = new class () {
         $this->externalUrl = $externalUrl;
     }
 
-    public function call(string $uri, ?array $post = null, bool $json_encode = true)
+    public function call(string $uri, ?array $post = null): array
     {
         $header = [];
 
@@ -29,7 +29,7 @@ $api = new class () {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $content = curl_exec($ch);
         curl_close($ch);
-        return $json_encode ? json_decode($content) : $content;
+        return json_decode($content, true);
     }
 
     public function getNewToken(): never
@@ -42,12 +42,12 @@ $api = new class () {
         exit;
     }
 
-    public function verifyToken(string $jwt)
+    public function verifyToken(string $jwt): array
     {
         return $this->call('/?action=verify', ['jwt' => $jwt]);
     }
 
-    public function login(string $login, string $password)
+    public function login(string $login, string $password): array
     {
         return $this->call('/?action=login', [
             'login' => $login,
