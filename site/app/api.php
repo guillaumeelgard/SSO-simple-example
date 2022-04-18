@@ -9,7 +9,7 @@ $api = new class () {
         $this->externalUrl = $externalUrl;
     }
 
-    public function call(string $uri, ?array $post = null, bool $json_encode = true): stdClass
+    public function call(string $uri, ?array $post = null, bool $json_encode = true)
     {
         $header = [];
 
@@ -42,12 +42,12 @@ $api = new class () {
         exit;
     }
 
-    public function verifyToken(string $jwt): stdClass
+    public function verifyToken(string $jwt)
     {
         return $this->call('/?action=verify', ['jwt' => $jwt]);
     }
 
-    public function login(string $login, string $password): stdClass
+    public function login(string $login, string $password)
     {
         return $this->call('/?action=login', [
             'login' => $login,
