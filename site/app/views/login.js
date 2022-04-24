@@ -1,24 +1,26 @@
 document.querySelector('#login-form button[type=submit]').addEventListener('click', e => {
 
     e.preventDefault()
-    post(
-        '/?action=login',
-        {
+
+    fetch('/?action=login', {
+        method: 'POST',
+        body: JSON.stringify({
             login: document.querySelector('#login').value,
             password: document.querySelector('#password').value,
-        },
-        data => {
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
 
-            if(data.success)
-            {
-                window.location = '<?=$authAddress?>/?action=register&jwt=' + data.jwt + '&to=' + document.baseURI
-            }
-            else
-            {
-                alert('Nope')
-            }
+        if(data.success)
+        {
+            window.location = authAddress + '/?action=register&jwt=' + data.jwt + '&to=' + document.baseURI
         }
-    )
+        else
+        {
+            alert('Nope')
+        }
+    })
 })
 
 document.querySelectorAll('#login-form button[data-login]').forEach(btn => {

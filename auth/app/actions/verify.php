@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Vérifie le JWT proposé et retourne l'utilisateur en cas de succès
+ * Checks the provided JWT and returns the user if it's successful
  *
  * @var PDO $db
  */
@@ -20,7 +20,6 @@ $jwt = new JWT($data->jwt);
 if (! $jwt->isValid()) {
     echo json_encode([
         'success' => false,
-        'tokenId' => $jwt->getTokenId(),
     ]);
     exit;
 }

@@ -33,6 +33,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="<?=$authAddress?>">Auth</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/guillaumeelgard/SSO-simple-example" target="_blank">Git</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -40,6 +43,8 @@
         <div class="container mt-4 bg-dark text-secondary p-3">
             <h4>$_COOKIE</h4>
             <pre><?php
+
+                # We just display some stuff about the token stored in the cookie right here
 
                 if (isset($_COOKIE['jwt'])) {
                     $jwt = new JWT();
@@ -49,18 +54,21 @@
                     ];
 
                     if ($jwt->isValid()) {
-                        $display['JWT valide'] = 'oui';
+                        $display['isValid'] = 'yes';
                         $display['tokenId'] = $jwt->getTokenId();
                         $display['userId'] = $jwt->getUserId() ?? 'NULL';
                     } else {
-                        $display['JWT valide'] = 'non';
+                        $display['isValid'] = 'no';
                     }
 
-                    echo implode("\n", array_map_assoc($display, function ($k, $v) {
-                        return "$k : $v";
-                    }));
+                    $d = [];
+                    foreach($display as $k => $v)
+                    {
+                        $d[] = "$k: $v";
+                    }
+                    echo implode("\n", $d);
                 } else {
-                    echo 'Pas de cookie';
+                    echo 'No cookie';
                 }
 
             ?></pre>
@@ -68,6 +76,8 @@
         <div class="container mt-4 bg-dark text-secondary p-3">
             <h4>Database</h4>
             <pre><?php
+
+            # And here we just display the whole database
 
             $sth = $db->prepare('SELECT * FROM `sqlite_master` WHERE `type`="table" AND `name` NOT LIKE "sqlite_%"');
             $sth->execute();

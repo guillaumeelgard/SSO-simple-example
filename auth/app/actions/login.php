@@ -1,7 +1,7 @@
 <?php
 
 /**
- * On check le login et le mot de passe. S'ils sont bons on associe le userId au token existant ou bien à un nouveau s'il n'en existe pas encore.
+ * Let's check login and password. If they are correct, we associate the userId to the existing token or to a new one if we don't have any yet.
  *
  * @var PDO $db
  */

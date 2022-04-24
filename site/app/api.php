@@ -1,10 +1,25 @@
 <?php
 
-$api = new class () {
+/**
+ * This API is our link with the auth server
+ */
+class Api {
+    
+    /**
+     * The internal URL is used by the server
+     *
+     * @var string
+     */
     private string $internalUrl = 'http://host.docker.internal:8300';
+    
+    /**
+     * The external URL is transmitted to be used by the client
+     *
+     * @var string
+     */
     private string $externalUrl;
 
-    public function setExternalUrl(string $externalUrl): void
+    public function __construct(string $externalUrl)
     {
         $this->externalUrl = $externalUrl;
     }
@@ -32,6 +47,9 @@ $api = new class () {
         return json_decode($content, true);
     }
 
+    /**
+     * We are being redirected to the auth server. We will be redirected to the same URL but with a new JWT in a GET parameter.
+     */
     public function getNewToken(): never
     {
         unset($_SESSION['jwt']);
@@ -42,11 +60,22 @@ $api = new class () {
         exit;
     }
 
+    /**
+     * Let's verify if our JWT is valid or not, and if it is, we get the associated tokenId and if we're connected, the user info
+     *
+     * @param  string $jwt
+     * @return array{success: boolean, user: object|null, tokenId: int}
+     */
     public function verifyToken(string $jwt): array
     {
         return $this->call('/?action=verify', ['jwt' => $jwt]);
     }
 
+    /**
+     * Let's verify if our credentials are valid or not, and if they are, we get the associated user info and the jwt we can store
+     *
+     * @return array{success: boolean, user: object|null, jwt: string}
+     */
     public function login(string $login, string $password): array
     {
         return $this->call('/?action=login', [
@@ -57,4 +86,4 @@ $api = new class () {
     }
 };
 
-$api->setExternalUrl($authAddress);
+$api = new Api($authAddress);

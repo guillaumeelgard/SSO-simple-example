@@ -2,46 +2,9 @@
 
 use Firebase\JWT\JWT as FJWT;
 
-if(!file_exists(__DIR__ . '/database.sqlite'))
-{
-    copy(__DIR__ . '/database.sample.sqlite', __DIR__ . '/database.sqlite');
-}
-
-global $db;
-$db = new PDO('sqlite:' . __DIR__ . '/database.sqlite');
-
-function err404()
-{
-    header('HTTP/1.0 404 Not Found');
-    echo json_encode([
-        'success' => false,
-        'err_type' => 404,
-    ]);
-    exit;
-}
-
-function p($any)
-{
-    echo '<pre>';
-    print_r($any);
-    echo '</pre>';
-}
-
-function d($any)
-{
-    p($any);
-    exit;
-}
-
-function array_map_assoc(array $array, callable $callback): array
-{
-    $return = [];
-    foreach ($array as $k => $v) {
-        $return[] = $callback($k, $v);
-    }
-    return $return;
-}
-
+/**
+ * The URL class is designed to get, build, modify any element of a url, in order to retrieve it or redirect to it.
+ */
 class Url
 {
     private ?string $scheme = null;
@@ -75,13 +38,24 @@ class Url
         }
     }
 
-    public function setQuery(string $k, string $v): self
+    /**
+     * Adds or replaces a GET parameter
+     *
+     * @param $k The GET parameter
+     * @param $v Its value
+     */
+    public function setQuery(string $k, string $v): static
     {
         $this->query[$k] = $v;
         return $this;
     }
 
-    public function deleteQuery(string $k): self
+    /**
+     * Deletes a GET parameter
+     *
+     * @param $k The GET parameter
+     */
+    public function deleteQuery(string $k): static
     {
         if (array_key_exists($k, $this->query)) {
             unset($this->query[$k]);
@@ -89,13 +63,19 @@ class Url
         return $this;
     }
 
-    public function redirect(): void
+    /**
+     * Redirects to the URL
+     */
+    public function redirect(): never
     {
         header('Location: ' . $this);
         exit;
     }
 
-    public function get()
+    /**
+     * Returns the full URL
+     */
+    public function get(): string
     {
         $url = [];
 
@@ -127,9 +107,11 @@ class Url
 
         if ($this->query) {
             $url[] = '?';
-            $url[] = implode('&', array_map_assoc($this->query, function ($a, $b) {
-                return $a . '=' . $b;
-            }));
+            $s = [];
+            foreach ($this->query as $k => $v) {
+                $s[] = $k . '=' . $v;
+            }
+            $url[] = implode('&', $s);
         }
 
         if ($this->fragment) {
@@ -145,52 +127,78 @@ class Url
     }
 }
 
+/**
+ * Personnalized JWT class based on the Firebase one, to manipulate Json Web Tokens, to store them in a cookie and in the database, and so on
+ */
 class JWT
 {
     private ?int $tokenId = null;
     private ?int $userId = null;
 
-    private static string $key = '7WVQWzdclux2zF3ZCYZL';
+    private static string $key;
     private static PDO $db;
 
+    /**
+     * @param string|null $data If null, we recover the JWT from the cookie, otherwise we create it. (Designed for client/authServer requests)
+     *                          If string, we try to decode it to get the corresponding tokenId. (Designed for server/authServer requests)
+     */
     public function __construct(?string $data = null)
     {
-        if (!isset(self::$db)) {
-            global $db;
-            self::$db = &$db;
-        }
-
-        # Si on ne fournit pas de $data, c'est qu'on veut récupérer le JWT enregistré en cookie ou bien en créer un nouveau
-        # À utiliser dans des requêtes client <=> authServer
+        # If we do not provide $data, then we want to recover the JWT from the cookie or we want to create a new one
+        # To be used in client/authServer requests
 
         if (is_null($data)) {
-            # On récupère le JWT en cookie
+
+            # We try to recover the token from the cookie
 
             if (isset($_COOKIE['jwt'])) {
-                $this->tokenId = self::decode($_COOKIE['jwt']);
+                $this->tokenId = static::decode($_COOKIE['jwt']);
             }
 
-            # Si ça n'a pas marché, on en crée un nouveau et on l'enregistre en BDD et en cookie
+            # If we fail, we create a new one and we save it in the cookie and in the database
 
             if (is_null($this->tokenId)) {
-                $sth = self::$db->prepare('INSERT INTO `token` (`userId`) VALUES (NULL)');
+                $sth = static::$db->prepare('INSERT INTO `token` (`userId`) VALUES (NULL)');
                 $sth->execute();
-                $this->tokenId = self::$db->lastInsertId();
+                $this->tokenId = static::$db->lastInsertId();
                 $this->saveCookie();
             }
         }
 
-        # Sinon on récupère un JWT à partir d'un échange server <=> authServer
+        # If not, we recover the token from a server/authServer requests
 
         else {
-            $this->tokenId = self::decode($data);
+            $this->tokenId = static::decode($data);
         }
     }
 
     /**
-     * Un JWT est valide s'il a bien un tokenId et si ce tokenId existe bien en BDD.
-     *
-     * @return boolean
+     * Initializing the database variable $db and the $key
+     */
+    public static function init($db): void
+    {
+        # Let's store the database
+
+        static::$db = &$db;
+
+        # If we have no key, we create it randomly
+
+        if (!file_exists(APP_PATH . '/jwt_key.txt')) {
+            $bank = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $jwt_key = '';
+            for ($i = 0; $i < 20; $i++) {
+                $jwt_key.= $bank[rand(0, strlen($bank))];
+            }
+            file_put_contents(APP_PATH . '/jwt_key.txt', $jwt_key);
+        }
+
+        # Let's store the key
+
+        static::$key = trim(file_get_contents(APP_PATH . '/jwt_key.txt'));
+    }
+
+    /**
+     * A token is valid if it has a tokenId and if this tokenId is well stored in the database.
      */
     public function isValid(): bool
     {
@@ -198,7 +206,7 @@ class JWT
             return false;
         }
 
-        $sth = self::$db->prepare('SELECT * FROM `token` WHERE `id` = :id');
+        $sth = static::$db->prepare('SELECT * FROM `token` WHERE `id` = :id');
         $sth->bindParam('id', $this->tokenId);
         $sth->execute();
 
@@ -222,23 +230,20 @@ class JWT
     }
 
     /**
-     * Génère le JWT à partir de son payload
-     *
-     * @return string
+     * Generates the JWT from its payload
      */
     public function encode(): string
     {
-        return FJWT::encode(['tokenId' => $this->tokenId], self::$key, 'HS256');
+        return FJWT::encode(['tokenId' => $this->tokenId], static::$key, 'HS256');
     }
 
     /**
-     * Retourne le tokenId d'un JWT s'il est valide et s'il existe, NULL sinon
-     *
-     * @param string $jwt
-     * @return integer|null
+     * @return integer|null Returns the tokenId of a JWT if it is valid and if it exists, NULL otherwise
      */
     public static function decode(string $jwt): ?int
     {
+        # This method overwrites the Firebase one, it is adapted to our needs
+
         $timestamp = time();
 
         $tks = explode('.', $jwt);
@@ -277,7 +282,7 @@ class JWT
             return null;
         }
 
-        if (!hash_equals(hash_hmac('SHA256', "$headb64.$bodyb64", self::$key, true), $sig)) {
+        if (!hash_equals(hash_hmac('SHA256', "$headb64.$bodyb64", static::$key, true), $sig)) {
             return null;
         }
 
@@ -297,9 +302,7 @@ class JWT
     }
 
     /**
-     * Enregistre le JWT dans un cookie
-     *
-     * @return void
+     * Saves the JWT in a cookie
      */
     public function saveCookie(): void
     {
@@ -307,30 +310,27 @@ class JWT
     }
 
     /**
-     * Associe en base de données le userId au JWT
-     *
-     * @param integer $userId
-     * @return void
+     * Associates the userId with the JWT in the database
      */
     public function updateUser(int $userId): void
     {
-        $sth = self::$db->prepare('UPDATE `token` SET `userId` = :userId WHERE `id` = :id');
+        $sth = static::$db->prepare('UPDATE `token` SET `userId` = :userId WHERE `id` = :id');
         $sth->bindParam('id', $this->tokenId);
         $sth->bindParam('userId', $userId);
         $sth->execute();
     }
 
     /**
-     * Dissocie en base de données le userId du JWT
-     *
-     * @return void
+     * Dissociates the userId from the JWT in the database
      */
     public function logout(): void
     {
         if ($this->tokenId) {
-            $sth = self::$db->prepare('UPDATE `token` SET `userId` = NULL WHERE `id` = :id');
+            $sth = static::$db->prepare('UPDATE `token` SET `userId` = NULL WHERE `id` = :id');
             $sth->bindParam('id', $this->tokenId);
             $sth->execute();
         }
     }
 }
+
+JWT::init($db);

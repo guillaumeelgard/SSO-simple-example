@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script src="/scripts.js"></script>
     <link rel="stylesheet" href="/style.css">
     <title>Site <?=$kSite + 1?></title>
     <style>
@@ -36,6 +35,11 @@
         }
 
     </style>
+    <script>
+
+        const authAddress = '<?=$authAddress?>'
+
+    </script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -56,17 +60,24 @@
                 <li class="nav-item">
                     <a class="nav-link" href="<?=$authAddress?>">Auth</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/guillaumeelgard/SSO-simple-example" target="_blank">Git</a>
+                </li>
             </ul>
         </div>
     </nav>
     <section>
         <?php
 
+        # The main view
+
         require $page . '.php';
         $jsFile = __DIR__ . '/' . $page . '.js';
         if (file_exists($jsFile)) {
             ?><script><?php require $jsFile; ?></script><?php
         }
+
+        # In any case, let's display the $_SESSION values
 
         ?>
         <pre class="container mt-4 bg-dark text-secondary p-3">

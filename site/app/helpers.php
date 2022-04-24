@@ -1,37 +1,8 @@
 <?php
 
-function err404()
-{
-    header('HTTP/1.0 404 Not Found');
-    echo json_encode([
-        'success' => false,
-        'err_type' => 404,
-    ]);
-    exit;
-}
-
-function p(mixed $any): void
-{
-    echo '<pre>';
-    print_r($any);
-    echo '</pre>';
-}
-
-function d(mixed $any): never
-{
-    p($any);
-    exit;
-}
-
-function array_map_assoc(array $array, callable $callback): array
-{
-    $return = [];
-    foreach ($array as $k => $v) {
-        $return[] = $callback($k, $v);
-    }
-    return $return;
-}
-
+/**
+ * The URL class is designed to get, build, modify any element of a url, in order to retrieve it or redirect to it.
+ */
 class Url
 {
     private ?string $scheme = null;
@@ -65,12 +36,23 @@ class Url
         }
     }
 
+    /**
+     * Adds or replaces a GET parameter
+     *
+     * @param $k The GET parameter
+     * @param $v Its value
+     */
     public function setQuery(string $k, string $v): static
     {
         $this->query[$k] = $v;
         return $this;
     }
 
+    /**
+     * Deletes a GET parameter
+     *
+     * @param $k The GET parameter
+     */
     public function deleteQuery(string $k): static
     {
         if (array_key_exists($k, $this->query)) {
@@ -79,13 +61,19 @@ class Url
         return $this;
     }
 
-    public function redirect(): void
+    /**
+     * Redirects to the URL
+     */
+    public function redirect(): never
     {
         header('Location: ' . $this);
         exit;
     }
 
-    public function get()
+    /**
+     * Returns the full URL
+     */
+    public function get(): string
     {
         $url = [];
 
@@ -117,9 +105,12 @@ class Url
 
         if ($this->query) {
             $url[] = '?';
-            $url[] = implode('&', array_map_assoc($this->query, function ($a, $b) {
-                return $a . '=' . $b;
-            }));
+            $s = [];
+            foreach($this->query as $k => $v)
+            {
+                $s[] = $k . '=' . $v;
+            }
+            $url[] = implode('&', $s);
         }
 
         if ($this->fragment) {
@@ -133,19 +124,4 @@ class Url
     {
         return $this->get();
     }
-}
-
-function postData(?string $key = null): mixed
-{
-    $data = (array) json_decode(file_get_contents('php://input'), true);
-
-    if (is_null($key)) {
-        return $data;
-    }
-
-    if (array_key_exists($key, $data)) {
-        return $data[$key];
-    }
-
-    return null;
 }

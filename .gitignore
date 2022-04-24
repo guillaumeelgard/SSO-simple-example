@@ -2,6 +2,7 @@
 /auth/app/authAddress.txt
 /auth/app/websites.json
 /auth/app/database.sqlite
+/auth/app/jwt_key.txt
 /site/app/vendor
 /site/app/websites.json
 /site/app/authAddress.txt

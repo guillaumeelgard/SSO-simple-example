@@ -1,10 +1,7 @@
 <?php
 
 /**
- * On dissocie le JWT du userId puis on redirige vers l'URL demandée
- *
- * @var PDO $db
- * @var string $secret
+ * We dissociate the JWT from the userId then we redirect to the provided URL.
  */
 
 if (! isset($_COOKIE['jwt'])) {

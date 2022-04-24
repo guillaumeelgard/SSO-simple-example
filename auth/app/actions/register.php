@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Vérifie le JWT passé en $_GET et l'enregistre en cookie puis redirige vers l'URL demandée
+ * Checks the JWT provided in a GET parameter then saves it in a cookie then redirects to the provided URL.
  */
 
 $jwt = new JWT($_GET['jwt']);
