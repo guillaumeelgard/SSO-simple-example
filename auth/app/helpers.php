@@ -187,7 +187,7 @@ class JWT
             $bank = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             $jwt_key = '';
             for ($i = 0; $i < 20; $i++) {
-                $jwt_key.= $bank[rand(0, strlen($bank))];
+                $jwt_key.= $bank[rand(0, strlen($bank) - 1)];
             }
             file_put_contents(APP_PATH . '/jwt_key.txt', $jwt_key);
         }
